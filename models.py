@@ -25,8 +25,6 @@ class Bern_prop(MessagePassing):
             self.temp.data.fill_(1)
         else:
             self.temp.data = torch.linspace(1, 0, self.K + 1)
-            # self.temp.data = torch.linspace(0, 1, self.K + 1)
-            # self.temp.data.fill_(1)
 
     def get_filter(self):
         TEMP = F.relu(self.temp)
@@ -74,7 +72,6 @@ class BernNet(torch.nn.Module):
         super(BernNet, self).__init__()
         self.lin1 = nn.Linear(features, hidden)
         self.lin2 = nn.Linear(hidden, classes)
-        # self.m = torch.nn.BatchNorm1d(dataset.num_classes)
         self.prop1 = Bern_prop(K)
         self.prop2 = Bern_prop(K)
         self.prop3 = Bern_prop(K)
