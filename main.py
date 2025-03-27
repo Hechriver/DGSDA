@@ -27,13 +27,11 @@ def class_accuracies(y, pred):
     return class_acc, class_total, misclassified_counts
 
 
-def weighted_entropy_minimization_loss(output):
+def entropy_minimization_loss(output):
     probs = F.softmax(output, dim=1)
     log_probs = F.log_softmax(output, dim=1)
-
     a = torch.sum(probs, dim=0)
-    class_weights = a / torch.sum(a)
-    entropy_loss = -torch.sum(probs * log_probs / class_weights, dim=1).mean()
+    entropy_loss = -torch.sum(probs * log_probs / (a / torch.sum(a)), dim=1).mean()
     return entropy_loss
 
 def get_args():
@@ -97,9 +95,9 @@ if __name__ == '__main__':
 
         target_outputs = model(target_data, False)
 
-        weight_enloss = weighted_entropy_minimization_loss(target_outputs)
+        enloss = entropy_minimization_loss(target_outputs)
 
-        total_loss = loss + theta_loss*args.alpha + mmd_loss*args.beta + weight_enloss*args.gamma
+        total_loss = loss + theta_loss*args.alpha + mmd_loss*args.beta + enloss*args.gamma
 
         total_loss.backward()
         optimizer.step()
